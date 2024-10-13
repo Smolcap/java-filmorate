@@ -1,13 +1,156 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootTest
 class FilmorateApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    private FilmController filmController;
+
+    @Autowired
+    private FilmService filmService;
+
+    @BeforeEach
+    public void setUp() {
+        this.filmController = new FilmController(filmService);
+        filmService.clearFilm();
+    }
+
+    @Test
+    public void shouldCreateFilm() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+
+        Film filmControllerCreate = filmController.create(film);
+
+        Assertions.assertEquals(film, filmControllerCreate, "Фильмы должны быть одинаковы");
+    }
+
+    @Test
+    public void shouldUpdateFilm() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+        filmController.create(film);
+
+        film = Film.builder()
+                .id(1L)
+                .name("Titanic and Lodka")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+
+        Film filmControllerUpdate = filmController.update(film);
+        Assertions.assertEquals(film, filmControllerUpdate, "Фильм должен соответствовать обновлённому");
+    }
+
+    @Test
+    public void shouldGetAllFilms() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+        filmController.create(film);
+
+        List<Film> listFilms = filmController.allListFilm();
+
+        Assertions.assertEquals(1, listFilms.size(), "Список должен содержать 1 фильм");
+    }
+
+    @Test
+    public void shouldntNameFilmToBeEmpty() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .id(1L)
+                .name("")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            filmController.create(film);
+        });
+    }
+
+    @Test
+    public void shouldMaxLongDescription200Char() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Duration duration = Duration.ofMinutes(194);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Слишком длинное описание, которое превышает допустимую длину ........................." +
+                        "...................." + ".........................................." +
+                        ".....................................................")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            filmController.create(film);
+        });
+    }
+
+    @Test
+    public void shouldReleaseDateNotBefore28December1985Year() {
+        LocalDate localDate = LocalDate.of(1885, 12, 16);
+        Duration duration = Duration.ofMinutes(194);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(190L)
+                .build();
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            filmController.create(film);
+        });
+    }
+
+    @Test
+    public void shouldDurationFilmInPositive() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(-178L)
+                .build();
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            filmController.create(film);
+        });
+    }
 
 }
