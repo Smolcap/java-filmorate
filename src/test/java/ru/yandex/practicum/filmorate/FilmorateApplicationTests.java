@@ -3,10 +3,12 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -17,9 +19,13 @@ class FilmorateApplicationTests {
 
     private FilmController filmController;
 
+    @Autowired
+    private FilmService filmService;
+
     @BeforeEach
     public void setUp() {
-        this.filmController = new FilmController();
+        this.filmController = new FilmController(filmService);
+        filmService.clearFilm();
     }
 
     @Test
@@ -32,6 +38,7 @@ class FilmorateApplicationTests {
                 .releaseDate(localDate)
                 .duration(190L)
                 .build();
+
         Film filmControllerCreate = filmController.create(film);
 
         Assertions.assertEquals(film, filmControllerCreate, "Фильмы должны быть одинаковы");
