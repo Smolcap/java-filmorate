@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +12,11 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @Data
-public class Film {
+public class User {
 
     Long id;
-    @NotBlank(message = "Имя не может быть пустым")
+    String email;
+    String login;
     String name;
-    String description;
-    LocalDate releaseDate;
-    Long duration;
+    LocalDate birthday;
 }
