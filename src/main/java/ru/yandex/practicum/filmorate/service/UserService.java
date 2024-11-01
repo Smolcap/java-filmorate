@@ -35,4 +35,8 @@ public class UserService {
     public void clearUser() {
         userStorage.clearUsers();
     }
+
+    public void deleteUserById(Long userId) {
+        userStorage.deleteUserById(userId);
+    }
 }

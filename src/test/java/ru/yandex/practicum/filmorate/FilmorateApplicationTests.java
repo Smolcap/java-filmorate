@@ -361,7 +361,6 @@ class FilmorateApplicationTests {
     @Test
     public void shouldMutualListFriends() {
         User user1 = User.builder()
-                .id(1L)
                 .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
@@ -371,7 +370,6 @@ class FilmorateApplicationTests {
         userController.create(user1);
 
         User user2 = User.builder()
-                .id(2L)
                 .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
@@ -380,7 +378,6 @@ class FilmorateApplicationTests {
         userController.create(user2);
 
         User user3 = User.builder()
-                .id(3L)
                 .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
@@ -395,6 +392,23 @@ class FilmorateApplicationTests {
 
         List<User> mutualFriends = userController.getListMutualFriend(user1.getId(), user2.getId());
         Assertions.assertTrue(mutualFriends.contains(user3), "Общим другом должен быть User3");
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+        User user1 = User.builder()
+                .name("Smolcap")
+                .login("Daniel")
+                .email("dany.smol@yandex.ru")
+                .birthday(birthday)
+                .build();
+
+        User create = userController.create(user1);
+        userController.deleteUserById(create.getId());
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            userController.findById(create.getId());
+        }, "Пользователь должен быть удалён");
     }
 
     @Test
@@ -570,6 +584,23 @@ class FilmorateApplicationTests {
 
         Assertions.assertFalse(updatedLikes.contains(userControllerCreate.getId()), "Лайк не был удален " +
                 "для фильма");
+    }
+
+    @Test
+    public void shouldDeleteFilm() {
+        LocalDate localDate = LocalDate.of(1997, 12, 16);
+        Film film = Film.builder()
+                .name("Titanic")
+                .description("Description Long")
+                .releaseDate(localDate)
+                .duration(180L)
+                .build();
+        Film createFilm = filmController.create(film);
+        filmController.deleteFilmById(createFilm.getId());
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            filmController.findById(createFilm.getId());
+        }, "Фильм должен быть удалён с ID " + createFilm.getId());
     }
 
     @Test

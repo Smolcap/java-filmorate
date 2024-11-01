@@ -21,33 +21,26 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        log.info("Начало создание фильма");
-
         validationForFilms(film);
         film.setId(generationId());
         film.setUserLikes(new HashSet<>());
 
-        log.debug("Фильм создан {}", film);
         films.put(film.getId(), film);
-        log.debug("Фильм добавлен в хранилище {}", film.getId());
+        log.info("Фильм создан {} и добавлен в хранилище {}", film, film.getId());
 
         return film;
     }
 
     @Override
     public Film update(Film newFilm) {
-        log.info("Начало обновление фильма");
-
         validationUpdate(newFilm);
         validationUpdate(newFilm);
-
-        log.debug("Обновление фильма с Id: {}", newFilm.getId());
 
         films.put(newFilm.getId(), newFilm);
-        log.debug("Фильм обновлён с Id {}", newFilm.getId());
+
+        log.info("Фильм обновлён с Id {}", newFilm.getId());
         return newFilm;
     }
-
 
     @Override
     public List<Film> getAllFilms() {
@@ -67,6 +60,18 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Фильм с ID " + filmId + " не найден");
         }
         return film;
+    }
+
+    @Override
+    public void deleteFilmById(Long filmId) {
+        Film removeFilm = films.get(filmId);
+        if (removeFilm != null) {
+            films.remove(filmId);
+            log.info("Фильм с ID {} успешно удалён", filmId);
+        } else {
+            log.error("Фильм с ID {} для удаления не найден", filmId);
+            throw new NotFoundException("Пользователь для удаления с ID " + filmId + " не найден");
+        }
     }
 
     private void validationForFilms(Film film) {

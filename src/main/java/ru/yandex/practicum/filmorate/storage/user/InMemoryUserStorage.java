@@ -19,31 +19,20 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        log.info("Создание пользователя с данными: {}", user);
-
         validation(user);
-
         user.setId(generationId());
         user.setFriends(new HashSet<>());
 
-        log.info("Пользователь создан {}", user);
-
         users.put(user.getId(), user);
 
-        log.info("Пользователь добавлен в хранилище {}", user.getId());
-
+        log.info("Пользователь создан {} и добавлен в хранилище {}", user, user.getId());
         return user;
     }
 
     @Override
     public User update(User newUser) {
-        log.info("Начало обновления пользователя");
-
         validation(newUser);
         validationUpdateUser(newUser);
-
-        log.debug("Обновление пользователя с Id: {}", newUser.getId());
-
         users.put(newUser.getId(), newUser);
         log.info("Пользователь обновлён с Id: {}", newUser.getId());
         return newUser;
@@ -66,6 +55,19 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден");
         }
         return user;
+    }
+
+    @Override
+    public void deleteUserById(Long userId) {
+        User removeUser = users.get(userId);
+        if (removeUser != null) {
+            users.remove(userId);
+            log.info("Пользователь с ID {} успешно удалён", userId);
+        } else {
+            log.error("Пользователь с ID {} для удаления не найден", userId);
+            throw new NotFoundException("Пользователь для удаления с ID " + userId + " не найден");
+        }
+
     }
 
     private void validation(User user) {
