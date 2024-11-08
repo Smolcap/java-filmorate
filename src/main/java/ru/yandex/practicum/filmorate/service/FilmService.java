@@ -1,103 +1,41 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class FilmService {
+    FilmStorage filmStorage;
 
-    private static final LocalDate BEGINNING_OF_THE_DATE = LocalDate.of(1895, 12, 28);
 
-    private static Logger log = LoggerFactory.getLogger(FilmService.class);
-
-    private Map<Long, Film> films = new HashMap<>();
-
-    public Film create(Film film) {
-        log.info("Начало создание фильма");
-
-        if (film.getName() == null || film.getName().isEmpty()) {
-            log.debug("Наименование фильма {}", film.getName());
-            throw new ValidationException("Имя не должно быть пустым");
-        }
-        if (film.getDescription().length() >= 200) {
-            log.warn("Описание фильма {}", film.getDescription());
-            throw new ValidationException("Максимальная длина описания — 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(BEGINNING_OF_THE_DATE)) {
-            log.warn("Дата релиза фильма {}", film.getReleaseDate());
-            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration() == null || film.getDuration() <= 0) {
-            log.warn("Продолжительность фильма {}", film.getDuration());
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
-
-        Film createFilm = Film.builder()
-                .id(generationId())
-                .name(film.getName())
-                .description(film.getDescription())
-                .releaseDate(film.getReleaseDate())
-                .duration(film.getDuration())
-                .build();
-
-        log.debug("Фильм создан {}", createFilm);
-        films.put(createFilm.getId(), createFilm);
-        log.debug("Фильм добавлен в хранилище {}", createFilm.getId());
-
-        return createFilm;
+    public FilmService(FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
     }
 
-    public Film update(Film newFilm) {
-        log.info("Начало обновление фильма");
-
-        if (newFilm.getId() == null) {
-            log.debug("Id не указан для обновления");
-            throw new ValidationException("Id должен быть указан");
-        }
-        if (!films.containsKey(newFilm.getId())) {
-            log.warn(" Фильм не найден с Id {}", newFilm.getId());
-            throw new NotFoundException("Фильм не найден");
-        }
-        Film existingFilm = films.get(newFilm.getId());
-        log.debug("Обновление фильма с Id: {}", existingFilm.getId());
-
-        Film updateFilm = Film.builder()
-                .id(existingFilm.getId())
-                .name(newFilm.getName())
-                .description(newFilm.getDescription())
-                .releaseDate(newFilm.getReleaseDate())
-                .duration(newFilm.getDuration())
-                .build();
-        films.put(updateFilm.getId(), updateFilm);
-        log.debug("Фильм обновлён с Id {}", updateFilm.getId());
-        return updateFilm;
+    public Film createFilm(Film film) {
+        return filmStorage.create(film);
     }
 
+    public Film updateFilm(Film film) {
+        return filmStorage.update(film);
+    }
 
     public List<Film> getAllFilms() {
-        return new ArrayList<>(films.values());
+        return filmStorage.getAllFilms();
     }
 
     public void clearFilm() {
-        films.clear();
+        filmStorage.clearFilm();
     }
 
-    private long generationId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    public Film findById(Long filmId) {
+        return filmStorage.findById(filmId);
+    }
+
+    public void deleteFilmById(Long filmId) {
+        filmStorage.deleteFilmById(filmId);
     }
 }
