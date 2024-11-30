@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -30,35 +32,36 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> allListUsers() {
+    public List<UserDto> allListUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}/friends/common/{mutualFriendId}")
-    public List<User> getListMutualFriend(@PathVariable Long userId, @PathVariable Long mutualFriendId) {
+    public List<UserDto> getListMutualFriend(@PathVariable Long userId, @PathVariable Long mutualFriendId) {
         return friendshipService.listMutualFriend(userId, mutualFriendId);
     }
 
     @GetMapping("/{userId}/friends")
-    public List<User> getFriends(@PathVariable Long userId) {
+    public List<UserDto> getFriends(@PathVariable Long userId) {
         return friendshipService.getAllFriends(userId);
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable Long userId) {
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto findById(@PathVariable("userId") Long userId) {
         return userService.findById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@Valid @RequestBody User user) {
-        return userService.createUser(user);
+    public UserDto create(@Valid @RequestBody NewUserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 
-    @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
-        log.info("Данные для обновления пользователя с ID : {}", newUser);
-        return userService.updateUser(newUser);
+    @PutMapping("/{userId}")
+    public UserDto update(@Valid @RequestBody @PathVariable("userId") Long userId, UpdateUserRequest updateUserRequest) {
+        log.info("Данные для обновления пользователя с ID : {}", updateUserRequest);
+        return userService.updateUser(userId, updateUserRequest);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
