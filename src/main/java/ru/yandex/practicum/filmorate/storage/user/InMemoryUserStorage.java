@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.*;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
 
     private static Logger log = LoggerFactory.getLogger(InMemoryUserStorage.class);
@@ -49,25 +49,22 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User findById(Long userId) {
+    public Optional<User> findById(Long userId) {
         User user = users.get(userId);
-        if (user == null) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
-        }
-        return user;
+        return Optional.ofNullable(user);
     }
 
     @Override
-    public void deleteUserById(Long userId) {
+    public boolean deleteUserById(Long userId) {
         User removeUser = users.get(userId);
         if (removeUser != null) {
             users.remove(userId);
             log.info("Пользователь с ID {} успешно удалён", userId);
+            return true;
         } else {
             log.error("Пользователь с ID {} для удаления не найден", userId);
             throw new NotFoundException("Пользователь для удаления с ID " + userId + " не найден");
         }
-
     }
 
     private void validation(User user) {
