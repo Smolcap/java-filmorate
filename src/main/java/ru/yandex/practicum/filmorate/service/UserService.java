@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.validaton.UserValidation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +30,10 @@ public class UserService {
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             throw new ValidationException("Имейл должен быть указан");
         }
-
         User user = UserMapper.mapToUser(request);
+
+        UserValidation.validationForUser(user);
+
         user = userStorage.create(user);
         return UserMapper.mapToUserDto(user);
     }
@@ -40,6 +43,7 @@ public class UserService {
                 .map(user -> UserMapper.updateUserFields(user, request))
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         updatedUser = userStorage.update(updatedUser);
+        UserValidation.validationForUser(updatedUser);
         return UserMapper.mapToUserDto(updatedUser);
     }
 

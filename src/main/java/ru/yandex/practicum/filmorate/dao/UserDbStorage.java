@@ -54,6 +54,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
                 user.getBirthday()
         );
         user.setId(id);
+        logger.info("Создание пользователя с ID: {} ", id);
         return user;
     }
 
