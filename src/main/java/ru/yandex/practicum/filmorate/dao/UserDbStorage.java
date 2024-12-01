@@ -60,20 +60,19 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
 
     @Override
     public User update(User newUser) {
-        try {
-            update(
-                    UPDATE_USER_QUERY,
-                    newUser.getName(),
-                    newUser.getEmail(),
-                    newUser.getLogin(),
-                    newUser.getBirthday(),
-                    newUser.getId()
-            );
-            return newUser;
-        } catch (NotFoundException e) {
-            logger.error("Пользователь с таким Id не найден: {}", newUser.getId());
-            throw new NotFoundException("Пользователь с таким Id не найден");
-        }
+        logger.info("Обновление пользователя с ID: {}, Имя: {}, Email: {}", newUser.getId(), newUser.getName(),
+                newUser.getEmail());
+        Optional<User> existing = findById(newUser.getId());
+
+        update(
+                UPDATE_USER_QUERY,
+                newUser.getName(),
+                newUser.getEmail(),
+                newUser.getLogin(),
+                newUser.getBirthday(),
+                existing.orElseThrow(() -> new NotFoundException("Пользователь с таким Id не найден"))
+        );
+        return newUser;
     }
 
     @Override
@@ -98,27 +97,28 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
 
     @Override
     public Set<Long> addFriends(Long userId, Long friendId) {
+        logger.info("Добавление друга: userId = {}, friendId = {}", userId, friendId);
 
-        try {
-            logger.info("Добавление друга: userId = {}, friendId = {}", userId, friendId);
+        String statusAddFriend = jdbc.queryForList(FIND_RECORD_FRIEND, String.class, userId, friendId).stream()
+                .findFirst()
+                .map(status -> {
+                    if (status.equals(Status.FRIEND.name()) || status.equals(Status.ACCEPTED.name())) {
+                        logger.warn("Попытка добавить уже существующего друга: userId = {}, friendId = {}", userId,
+                                friendId);
+                        throw new ValidationException("Нельзя добавить в друзья уже существующего друга");
+                    }
+                    if (friendId == null) {
+                        logger.warn("Добавление в друзья несуществующего пользователя с ID: {}", friendId);
+                        throw new NotFoundException("Добавление в друзья не существующего пользователя");
+                    }
+                    return status;
+                })
+                .orElse(null);
 
-            String statusAddFriend = jdbc.queryForList(FIND_RECORD_FRIEND, String.class, userId, friendId).stream()
-                    .findFirst()
-                    .map(status -> {
-                        if (status.equals(Status.FRIEND.name()) || status.equals(Status.ACCEPTED.name())) {
-                            logger.warn("Попытка добавить уже существующего друга: userId = {}, friendId = {}", userId, friendId);
-                            throw new ValidationException("Нельзя добавить в друзья уже существующего друга");
-                        }
-                        return status;
-                    })
-                    .orElse(null);
+        jdbc.update(INSERT_ADD_FRIEND_QUERY, userId, friendId, Status.UNCONFIRMED.name());
+        logger.info("Друг успешно добавлен: userId = {}, friendId = {}", userId, friendId);
+        return Set.of(friendId);
 
-            jdbc.update(INSERT_ADD_FRIEND_QUERY, userId, friendId, Status.UNCONFIRMED.name());
-            logger.info("Друг успешно добавлен: userId = {}, friendId = {}", userId, friendId);
-            return Set.of(friendId);
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Добавление в друзья не существующего пользователя");
-        }
     }
 
     @Override
