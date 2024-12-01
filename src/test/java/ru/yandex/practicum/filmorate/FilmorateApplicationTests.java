@@ -86,14 +86,17 @@ class FilmorateApplicationTests {
 
         UpdateUserRequest updateRequest = UpdateUserRequest.builder()
                 .name("kroki")
+                .email(createdUser.getEmail())
+                .login(createdUser.getLogin())
+                .birthday(createdUser.getBirthday())
+                .id(createdUser.getId())
                 .build();
 
-        UserDto updatedUserDto = userController.update(createdUser.getId(), updateRequest);
+        UserDto updatedUserDto = userController.update(updateRequest);
 
-        Assertions.assertEquals("kroki", updatedUserDto.getName(), "Имя пользователя" +
-                " должно быть обновлено");
-        Assertions.assertEquals(createdUser.getId(), updatedUserDto.getId(), "ID пользователя " +
-                "должно остаться прежним");
+        Assertions.assertNotNull(createdUser.getId(), "ID созданного пользователя не должен быть null");
+        Assertions.assertEquals("kroki", updatedUserDto.getName(), "Имя пользователя должно быть обновлено");
+        Assertions.assertEquals(createdUser.getId(), updatedUserDto.getId(), "ID пользователя должно остаться прежним");
     }
 
     @Test

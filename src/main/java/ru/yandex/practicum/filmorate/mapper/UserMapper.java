@@ -28,6 +28,7 @@ public final class UserMapper {
                 .login(request.getLogin())
                 .birthday(request.getBirthday())
                 .friends(request.getFriends())
+                .id(request.getId())
                 .build();
         return user;
     }

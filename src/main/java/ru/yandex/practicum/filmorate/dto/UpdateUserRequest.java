@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +11,8 @@ import java.util.Set;
 @Builder
 @Data
 public class UpdateUserRequest {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    Long id;
     String name;
     String email;
     String login;
