@@ -21,6 +21,17 @@ public final class UserMapper {
         return user;
     }
 
+    public static User mapToUser(UpdateUserRequest request) {
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .login(request.getLogin())
+                .birthday(request.getBirthday())
+                .friends(request.getFriends())
+                .build();
+        return user;
+    }
+
     public static UserDto mapToUserDto(User user) {
         UserDto userDto = UserDto.builder()
                 .id(user.getId())

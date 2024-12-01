@@ -38,13 +38,11 @@ public class UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto updateUser(Long userId, UpdateUserRequest request) {
-        User updatedUser = userStorage.findById(userId)
-                .map(user -> UserMapper.updateUserFields(user, request))
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        updatedUser = userStorage.update(updatedUser);
-        UserValidation.validationForUser(updatedUser);
-        return UserMapper.mapToUserDto(updatedUser);
+    public UserDto updateUser(UpdateUserRequest request) {
+        User user = UserMapper.mapToUser(request);
+        UserValidation.validationForUser(user);
+        user = userStorage.update(user);
+        return UserMapper.mapToUserDto(user);
     }
 
     public List<UserDto> getAllUsers() {
