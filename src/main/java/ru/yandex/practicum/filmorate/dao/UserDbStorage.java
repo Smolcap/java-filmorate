@@ -63,6 +63,10 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
         logger.info("Обновление пользователя с ID: {}, Имя: {}, Email: {}", newUser.getId(), newUser.getName(),
                 newUser.getEmail());
         Optional<User> existing = findById(newUser.getId());
+        if (existing.isEmpty()) {
+            logger.warn("Пользователь не найден с ID: {}", newUser.getId());
+            throw new NotFoundException("Пользователь с таким Id не найден");
+        }
 
         update(
                 UPDATE_USER_QUERY,
@@ -70,7 +74,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
                 newUser.getEmail(),
                 newUser.getLogin(),
                 newUser.getBirthday(),
-                existing.orElseThrow(() -> new NotFoundException("Пользователь с таким Id не найден"))
+                newUser.getId()
         );
         return newUser;
     }

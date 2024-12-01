@@ -64,14 +64,15 @@ public class UserDbTests {
 
         user.setName("Smolcap");
 
-        User userUpdate = userStorage.update(user);
+        User updatedUser = userStorage.update(user);
 
-        assertThat(userUpdate).isNotNull();
-        assertThat(userUpdate.getName()).isEqualTo("Smolcap");
-        assertThat(userUpdate.getEmail()).isEqualTo("user1@example.com");
-        assertThat(userUpdate.getLogin()).isEqualTo("testlogin1");
-        assertThat(userUpdate.getBirthday()).isEqualTo(LocalDate.of(1990, 1, 1));
-        assertThat(userUpdate.getId()).isNotNull();
+        assertThat(updatedUser).isNotNull();
+        assertThat(updatedUser.getName()).isEqualTo("Smolcap");
+        assertThat(updatedUser.getEmail()).isEqualTo("user1@example.com");
+        assertThat(updatedUser.getLogin()).isEqualTo("testlogin1");
+        assertThat(updatedUser.getBirthday()).isEqualTo(LocalDate.of(1990, 1, 1));
+        assertThat(updatedUser.getId()).isNotNull();
+
     }
 
     @Test
