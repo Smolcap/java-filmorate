@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -16,8 +17,8 @@ public class NewFilmRequest {
     String description;
     LocalDate releaseDate;
     Long duration;
-    MovieRating rating;
-    Genre genre;
+    Mpa mpa;
+    List<Genre> genres;
 
     @Builder.Default
     Set<Long> userLikes = new HashSet<>();

@@ -5,10 +5,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
@@ -20,7 +21,7 @@ public class FilmDto {
     String description;
     LocalDate releaseDate;
     Long duration;
-    MovieRating rating;
-    Genre genre;
+    Mpa mpa;
+    List<Genre> genres;
     int likes;
 }

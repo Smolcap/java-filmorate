@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.constants.MovieRating;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -69,6 +70,16 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Фильм с ID {} для удаления не найден", filmId);
             throw new NotFoundException("Пользователь для удаления с ID " + filmId + " не найден");
         }
+    }
+
+    @Override
+    public MovieRating getRatingNameById(int mpaId) {
+        return null;
+    }
+
+    @Override
+    public List<MovieRating> getAllRating() {
+        return List.of();
     }
 
     private void validationForFilms(Film film) {

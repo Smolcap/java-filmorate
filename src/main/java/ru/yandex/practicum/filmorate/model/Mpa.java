@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.constants.Genres;
+import ru.yandex.practicum.filmorate.constants.MovieRating;
+
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class Genre {
-    Long id;
+public class Mpa {
+    int id;
     String name;
 
     @JsonCreator
-    public Genre(Long id, String name) {
+    public Mpa(int id) {
         this.id = id;
-        this.name = Genres.fromId(id).name();
+        this.name = MovieRating.fromId(id).name();
     }
 }

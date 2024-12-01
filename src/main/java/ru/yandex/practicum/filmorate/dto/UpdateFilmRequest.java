@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -14,12 +15,13 @@ import java.util.Set;
 public class UpdateFilmRequest {
     private static final LocalDate BEGINNING_OF_THE_DATE = LocalDate.of(1895, 12, 28);
 
+    Long id;
     String name;
     String description;
     LocalDate releaseDate;
     Long duration;
-    MovieRating rating;
-    Genre genre;
+    Mpa mpa;
+    List<Genre> genres;
 
     @Builder.Default
     Set<Long> userLikes = new HashSet<>();
@@ -43,11 +45,11 @@ public class UpdateFilmRequest {
     }
 
     public boolean hasRating() {
-        return rating != null;
+        return mpa != null;
     }
 
     public boolean hasGenre() {
-        return genre != null;
+        return genres != null && genres.isEmpty();
     }
 
     public boolean hasUserLikes() {

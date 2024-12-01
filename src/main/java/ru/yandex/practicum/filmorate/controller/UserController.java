@@ -41,6 +41,7 @@ public class UserController {
         return friendshipService.listMutualFriend(userId, mutualFriendId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{userId}/friends")
     public List<UserDto> getFriends(@PathVariable Long userId) {
         return friendshipService.getAllFriends(userId);

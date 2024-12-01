@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -27,8 +28,8 @@ public class FilmRowMapper implements RowMapper<Film> {
     @Override
     public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Long filmId = resultSet.getLong("film_id");
-        Long genreId = resultSet.getLong("genre_id");
-        Genre genre = getGenreById(genreId);
+        int ratingId = resultSet.getInt("rating_id");
+        MovieRating mpaRating = MovieRating.fromId(ratingId);
 
         Film film = Film.builder()
                 .id(filmId)
@@ -37,16 +38,16 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
                 .duration(resultSet.getLong("duration"))
                 .likes(resultSet.getInt("like_film"))
-                .genre(genre)
-                .rating(MovieRating.valueOf(resultSet.getString("rating")))
+                .genres(getGenresForFilm(filmId))
+                .mpa(mpaRating)
                 .userLikes(getUserLikesForFilm(filmId))
                 .build();
         return film;
     }
 
-    private Genre getGenreById(Long genreId) {
-        String query = "SELECT * FROM genre WHERE genre_id = ?";
-        return jdbcTemplate.queryForObject(query, new Object[]{genreId}, (rs, rowNum) ->
+    private List<Genre> getGenresForFilm(Long filmId) {
+        String findGenres = "SELECT g.genre_id, g.name FROM film_genre fg JOIN genre g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";
+        return jdbcTemplate.query(findGenres, new Object[]{filmId}, (rs, rowNum) ->
                 new Genre(rs.getLong("genre_id"), rs.getString("name"))
         );
     }

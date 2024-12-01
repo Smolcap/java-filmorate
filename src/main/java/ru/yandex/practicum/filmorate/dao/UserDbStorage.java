@@ -47,14 +47,10 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
 
     @Override
     public User create(User user) {
-        Long id = insert(INSERT_QUERY,
-                user.getName(),
-                user.getEmail(),
-                user.getLogin(),
-                user.getBirthday()
-        );
+        logger.info("Создание пользователя: {}", user);
+        Long id = addUser(user);
         user.setId(id);
-        logger.info("Создание пользователя с ID: {} ", id);
+        logger.debug("Создание пользователя с ID: {} ", id);
         return user;
     }
 
@@ -62,20 +58,14 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
     public User update(User newUser) {
         logger.info("Обновление пользователя с ID: {}, Имя: {}, Email: {}", newUser.getId(), newUser.getName(),
                 newUser.getEmail());
+
         Optional<User> existing = findById(newUser.getId());
         if (existing.isEmpty()) {
             logger.warn("Пользователь не найден с ID: {}", newUser.getId());
             throw new NotFoundException("Пользователь с таким Id не найден");
         }
 
-        update(
-                UPDATE_USER_QUERY,
-                newUser.getName(),
-                newUser.getEmail(),
-                newUser.getLogin(),
-                newUser.getBirthday(),
-                newUser.getId()
-        );
+        updateUser(newUser);
         return newUser;
     }
 
@@ -103,6 +93,12 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
     public Set<Long> addFriends(Long userId, Long friendId) {
         logger.info("Добавление друга: userId = {}, friendId = {}", userId, friendId);
 
+        Optional<User> friend = findOne("SELECT * FROM user_app WHERE user_id = ?", friendId);
+        if (friend.isEmpty()) {
+            logger.warn("Добавление в друзья несуществующего пользователя с ID: {}", friendId);
+            throw new NotFoundException("Добавление в друзья не существующего пользователя");
+        }
+
         String statusAddFriend = jdbc.queryForList(FIND_RECORD_FRIEND, String.class, userId, friendId).stream()
                 .findFirst()
                 .map(status -> {
@@ -110,10 +106,6 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
                         logger.warn("Попытка добавить уже существующего друга: userId = {}, friendId = {}", userId,
                                 friendId);
                         throw new ValidationException("Нельзя добавить в друзья уже существующего друга");
-                    }
-                    if (friendId == null) {
-                        logger.warn("Добавление в друзья несуществующего пользователя с ID: {}", friendId);
-                        throw new NotFoundException("Добавление в друзья не существующего пользователя");
                     }
                     return status;
                 })
@@ -151,6 +143,11 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
     @Override
     public List<User> findAllFriend(Long userId) {
         logger.info("Поиск всех друзей для userId = {}", userId);
+
+        Optional<User> haveUser = findById(userId);
+        if (haveUser.isEmpty()) {
+            throw new NotFoundException("Пользователь с ID " + userId + " не найден.");
+        }
 
         List<Long> friendsId = jdbc.query(
                 FIND_ALL_FRIENDS_QUERY,
@@ -190,5 +187,25 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage, 
 
         logger.info("Возвращаем общих друзей для userId = {}, friendId = {}: {}", userId, friendId, mutualFriends);
         return mutualFriends;
+    }
+
+    private Long addUser(User user) {
+        return insert(INSERT_QUERY,
+                user.getName(),
+                user.getEmail(),
+                user.getLogin(),
+                user.getBirthday()
+        );
+    }
+
+    private void updateUser(User newUser) {
+        update(
+                UPDATE_USER_QUERY,
+                newUser.getName(),
+                newUser.getEmail(),
+                newUser.getLogin(),
+                newUser.getBirthday(),
+                newUser.getId()
+        );
     }
 }

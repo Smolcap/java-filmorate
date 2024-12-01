@@ -1,6 +1,11 @@
 CREATE TABLE IF NOT EXISTS genre (
-    genre_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(40) NOT NULL
+    genre_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(40)
+);
+
+CREATE TABLE IF NOT EXISTS rating (
+rating_id INT PRIMARY KEY,
+name VARCHAR(10) CHECK (name IN ('G', 'PG', 'PG-13', 'R', 'NC-17'))
 );
 
 CREATE TABLE IF NOT EXISTS user_app (
@@ -18,9 +23,8 @@ CREATE TABLE IF NOT EXISTS film (
     release_date DATE NOT NULL,
     duration INT NOT NULL,
     like_film INT,
-    genre_id INT,
-    rating VARCHAR(10) CHECK (rating IN ('G', 'PG', 'PG-13', 'R', 'NC-17')),
-    FOREIGN KEY (genre_id) REFERENCES genre(genre_id)
+    rating_id INT,
+    FOREIGN KEY (rating_id) REFERENCES rating(rating_id)
 );
 
 CREATE TABLE IF NOT EXISTS friend_user (
@@ -47,4 +51,12 @@ CREATE TABLE IF NOT EXISTS film_user (
     PRIMARY KEY (user_id, film_id),
     FOREIGN KEY (user_id) REFERENCES user_app(user_id),
     FOREIGN KEY (film_id) REFERENCES film(film_id)
+);
+
+CREATE TABLE IF NOT EXISTS film_genre (
+    film_id BIGINT NOT NULL,
+    genre_id BIGINT NOT NULL,
+    PRIMARY KEY (film_id, genre_id),
+    FOREIGN KEY (film_id) REFERENCES film(film_id),
+    FOREIGN KEY (genre_id) REFERENCES genre(genre_id)
 );

@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -27,9 +26,6 @@ public class UserService {
     }
 
     public UserDto createUser(NewUserRequest request) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            throw new ValidationException("Имейл должен быть указан");
-        }
         User user = UserMapper.mapToUser(request);
 
         UserValidation.validationForUser(user);
