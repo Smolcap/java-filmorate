@@ -10,7 +10,7 @@ import java.util.Set;
 @Builder
 @Data
 public class UpdateUserRequest {
-    String username;
+    String name;
     String email;
     String login;
     LocalDate birthday;
@@ -19,7 +19,7 @@ public class UpdateUserRequest {
     Set<Long> friends = new HashSet<>();
 
     public boolean hasUsername() {
-        return username != null && !username.isEmpty();
+        return name != null && !name.isEmpty();
     }
 
     public boolean hasEmail() {

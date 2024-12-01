@@ -54,7 +54,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldCreateUser() {
         NewUserRequest request = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -63,7 +63,7 @@ class FilmorateApplicationTests {
         UserDto createdUserDto = userController.create(request);
 
         Assertions.assertNotNull(createdUserDto.getId(), "ID должен быть установлен");
-        Assertions.assertEquals(request.getUsername(), createdUserDto.getUsername(), "Имя должно совпадать");
+        Assertions.assertEquals(request.getName(), createdUserDto.getName(), "Имя должно совпадать");
     }
 
     @Test
@@ -77,7 +77,7 @@ class FilmorateApplicationTests {
 
         UserDto createdUser = userController.create(
                 NewUserRequest.builder()
-                        .username(user.getName())
+                        .name(user.getName())
                         .login(user.getLogin())
                         .email(user.getEmail())
                         .birthday(user.getBirthday())
@@ -85,12 +85,12 @@ class FilmorateApplicationTests {
         );
 
         UpdateUserRequest updateRequest = UpdateUserRequest.builder()
-                .username("kroki")
+                .name("kroki")
                 .build();
 
         UserDto updatedUserDto = userController.update(createdUser.getId(), updateRequest);
 
-        Assertions.assertEquals("kroki", updatedUserDto.getUsername(), "Имя пользователя" +
+        Assertions.assertEquals("kroki", updatedUserDto.getName(), "Имя пользователя" +
                 " должно быть обновлено");
         Assertions.assertEquals(createdUser.getId(), updatedUserDto.getId(), "ID пользователя " +
                 "должно остаться прежним");
@@ -99,14 +99,14 @@ class FilmorateApplicationTests {
     @Test
     public void shouldGetAllUsers() {
         UserDto user1 = userController.create(NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
                 .build());
 
         UserDto user2 = userController.create(NewUserRequest.builder()
-                .username("AntonCa")
+                .name("AntonCa")
                 .login("Anton")
                 .email("anon.anton@yandex.ru")
                 .birthday(birthday)
@@ -127,7 +127,7 @@ class FilmorateApplicationTests {
         LocalDate invalidBirthday = LocalDate.of(2025, 11, 12);
 
         NewUserRequest request = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(invalidBirthday)
@@ -141,7 +141,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldntEmailToBeEmptyAndNoHaveChar() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smolyandex.ru")
                 .birthday(birthday)
@@ -155,7 +155,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldntLoginToBeEmptyAndHaveSpaces() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -169,21 +169,21 @@ class FilmorateApplicationTests {
     @Test
     public void shouldNameToBeEmptyButUseLogin() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username(" ")
+                .name(" ")
                 .login("daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
                 .build();
 
         UserDto create = userController.create(newUserRequest);
-        Assertions.assertEquals("daniel", create.getUsername(), "Если имя пустое в таком случае будет " +
+        Assertions.assertEquals("daniel", create.getName(), "Если имя пустое в таком случае будет " +
                 "использован логин");
     }
 
     @Test
     public void shouldAddFriend() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -193,7 +193,7 @@ class FilmorateApplicationTests {
         Long getIdUsr1 = userControllerCreate.getId();
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -221,7 +221,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldAddFriendAlreadyFriends() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -231,7 +231,7 @@ class FilmorateApplicationTests {
         Long getIdUsr1 = userControllerCreate.getId();
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -268,7 +268,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldGetMutualFriends() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -278,7 +278,7 @@ class FilmorateApplicationTests {
         Long getIdUsr1 = userControllerCreate.getId();
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -288,7 +288,7 @@ class FilmorateApplicationTests {
         Long getIdUser2 = userControllerCreate2.getId();
 
         NewUserRequest newUserRequest3 = NewUserRequest.builder()
-                .username("Genadii")
+                .name("Genadii")
                 .login("Stemap")
                 .email("genka.smo@yandex.ru")
                 .birthday(birthday)
@@ -317,7 +317,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldDeleteFriend() {
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -327,7 +327,7 @@ class FilmorateApplicationTests {
         Long getIdUsr1 = userControllerCreate.getId();
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -346,7 +346,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldGetListFriendsById() {
         NewUserRequest newUserRequest1 = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -356,7 +356,7 @@ class FilmorateApplicationTests {
         Long userId1 = user1Dto.getId();
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -383,7 +383,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldMutualListFriends() {
         NewUserRequest newUserRequest1 = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -392,7 +392,7 @@ class FilmorateApplicationTests {
         UserDto user1Dto = userController.create(newUserRequest1);
 
         NewUserRequest newUserRequest2 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -400,7 +400,7 @@ class FilmorateApplicationTests {
         UserDto user2Dto = userController.create(newUserRequest2);
 
         NewUserRequest newUserRequest3 = NewUserRequest.builder()
-                .username("StepaCap")
+                .name("StepaCap")
                 .login("Stemap")
                 .email("dany.smo@yandex.ru")
                 .birthday(birthday)
@@ -421,7 +421,7 @@ class FilmorateApplicationTests {
     @Test
     public void shouldDeleteUser() {
         NewUserRequest newUserRequest1 = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -567,7 +567,7 @@ class FilmorateApplicationTests {
     public void shouldAddLike() {
         LocalDate localDate = LocalDate.of(1997, 12, 16);
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(birthday)
@@ -593,7 +593,7 @@ class FilmorateApplicationTests {
     public void shouldDeleteLike() {
         LocalDate localDate = LocalDate.of(1997, 12, 16);
         NewUserRequest newUserRequest = NewUserRequest.builder()
-                .username("Smolcap")
+                .name("Smolcap")
                 .login("Daniel")
                 .email("dany.smol@yandex.ru")
                 .birthday(localDate)

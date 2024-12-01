@@ -12,7 +12,7 @@ public final class UserMapper {
 
     public static User mapToUser(NewUserRequest request) {
         User user = User.builder()
-                .name(request.getUsername())
+                .name(request.getName())
                 .email(request.getEmail())
                 .login(request.getLogin())
                 .birthday(request.getBirthday())
@@ -24,7 +24,7 @@ public final class UserMapper {
     public static UserDto mapToUserDto(User user) {
         UserDto userDto = UserDto.builder()
                 .id(user.getId())
-                .username(user.getName())
+                .name(user.getName())
                 .login(user.getLogin())
                 .email(user.getEmail())
                 .birthday(user.getBirthday())
@@ -42,7 +42,7 @@ public final class UserMapper {
             user.setLogin(request.getLogin());
         }
         if (request.hasUsername()) {
-            user.setName(request.getUsername());
+            user.setName(request.getName());
         }
         if (request.hasBirthday()) {
             user.setBirthday(request.getBirthday());

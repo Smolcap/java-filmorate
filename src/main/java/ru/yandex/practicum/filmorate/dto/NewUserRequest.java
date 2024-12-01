@@ -10,7 +10,7 @@ import java.util.Set;
 @Builder
 @Data
 public class NewUserRequest {
-    String username;
+    String name;
     String email;
     String login;
     LocalDate birthday;
