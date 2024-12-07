@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class UserDto {
     String login;
     LocalDate birthday;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Builder.Default
     Set<Long> friends = new HashSet<>();
 }
