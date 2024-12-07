@@ -4,11 +4,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -20,12 +18,13 @@ public class Film {
     String description;
     LocalDate releaseDate;
     Long duration;
-    MovieRating mpa;
+    Mpa mpa;
 
     @Builder.Default
     Set<Long> userLikes = new HashSet<>();
 
-    int likes;
+    @Builder.Default
+    Set<Genre> genres = new HashSet<>();
 
-    List<Genre> genres;
+    int likes;
 }

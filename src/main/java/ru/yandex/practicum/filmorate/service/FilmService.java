@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dto.MpaDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -27,7 +25,6 @@ public class FilmService {
 
     public FilmDto createFilm(NewFilmRequest request) {
         Film film = FilmMapper.mapToFilm(request);
-        FilmValidation.validationRating(film.getMpa().getId());
         FilmValidation.validationForFilm(film);
 
         film = filmStorage.create(film);
@@ -43,25 +40,8 @@ public class FilmService {
 
     public List<FilmDto> getAllFilms() {
         List<Film> films = filmStorage.getAllFilms();
-        List<FilmDto> filmDto = films.stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-
+        List<FilmDto> filmDto = films.stream().map(FilmMapper::mapToFilmDto).collect(Collectors.toList());
         return filmDto;
-    }
-
-    public MpaDto getRatingNameById(int mpaId) {
-        FilmValidation.validationRating(mpaId);
-        MovieRating movieRating = filmStorage.getRatingNameById(mpaId);
-        return FilmMapper.mapToFilmDto(movieRating);
-    }
-
-    public List<MpaDto> getAllRating() {
-        List<MovieRating> rating = filmStorage.getAllRating();
-        List<MpaDto> mpaDto = rating.stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-        return mpaDto;
     }
 
     public void clearFilm() {
@@ -69,9 +49,7 @@ public class FilmService {
     }
 
     public FilmDto findById(Long filmId) {
-        return filmStorage.findById(filmId)
-                .map(FilmMapper::mapToFilmDto)
-                .orElseThrow(() -> new NotFoundException("Фильм не найден с ID: " + filmId));
+        return filmStorage.findById(filmId).map(FilmMapper::mapToFilmDto).orElseThrow(() -> new NotFoundException("Фильм не найден с ID: " + filmId));
     }
 
     public void deleteFilmById(Long filmId) {

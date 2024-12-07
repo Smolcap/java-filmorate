@@ -29,7 +29,7 @@ import java.util.Set;
 @ActiveProfiles("test")
 class FilmorateApplicationTests {
     private static final LocalDate birthday = LocalDate.of(2001, 10, 9);
-    private final Mpa defaultMpa = new Mpa(1);
+    private final Mpa defaultMpa = new Mpa();
 
     private FilmController filmController;
     @Autowired

@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
@@ -22,6 +22,6 @@ public class FilmDto {
     LocalDate releaseDate;
     Long duration;
     Mpa mpa;
-    List<Genre> genres;
+    Set<Genre> genres;
     int likes;
 }

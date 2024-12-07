@@ -2,8 +2,6 @@ package ru.yandex.practicum.filmorate.validaton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.yandex.practicum.filmorate.constants.MovieRating;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -33,13 +31,8 @@ public class FilmValidation {
             log.warn("Продолжительность фильма {}", film.getDuration());
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         }
-
-    }
-
-    public static void validationRating(int mpaId) {
-        MovieRating rating = MovieRating.fromId(mpaId);
-        if ((rating.getId() > MAX_NUMBER_RATING) || (rating.getId() <= MIN_NUMBER_RATING)) {
-            throw new NotFoundException("Некорректный идентификатор рейтинга");
+        if (film.getMpa().getId() > MAX_NUMBER_RATING || film.getMpa().getId() <= MIN_NUMBER_RATING) {
+            throw new ValidationException("Некорректный идентификатор рейтинга: " + film.getMpa().getId());
         }
     }
 }

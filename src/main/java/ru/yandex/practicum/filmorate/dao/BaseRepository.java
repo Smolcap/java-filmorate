@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class BaseRepository<T> {
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
+    private static final Logger logger = LoggerFactory.getLogger(BaseRepository.class);
 
     protected List<T> findMany(String query, Object... params) {
         return jdbc.query(query, mapper, params);
