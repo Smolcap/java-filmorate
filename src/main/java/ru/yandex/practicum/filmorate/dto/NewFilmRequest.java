@@ -1,30 +1,26 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Data
-public class Film {
-    Long id;
+public class NewFilmRequest {
     String name;
     String description;
     LocalDate releaseDate;
     Long duration;
     Mpa mpa;
+    Set<Genre> genres;
 
     @Builder.Default
     Set<Long> userLikes = new HashSet<>();
-
-    @Builder.Default
-    Set<Genre> genres = new HashSet<>();
 
     int likes;
 }
