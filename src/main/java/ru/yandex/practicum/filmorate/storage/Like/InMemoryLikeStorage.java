@@ -12,9 +12,9 @@ import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -32,55 +32,53 @@ public class InMemoryLikeStorage implements LikeStorage {
     public Set<Long> addLike(@NotNull Long filmId, @NotNull Long userId) {
         log.debug("Добавление лайка пользователем {} к фильму {}", userId, filmId);
 
-        Optional<Film> filmOptional = filmStorage.findById(filmId);
-        if (filmOptional.isEmpty()) {
-            log.error("Фильм с ID {} не найден", filmId);
-            throw new ValidationException("Фильм не найден");
-        }
-
-        Film filmForLikeAdd = filmOptional.get();
+        Film film = filmStorage.findById(filmId)
+                .orElseThrow(() -> {
+                    log.error("Фильм с ID {} не найден", filmId);
+                    return new ValidationException("Фильм не найден");
+                });
 
         if (userStorage.findById(userId) == null) {
-            log.error("Пользователь с ID {}, который ставит лайк не существует", userId);
-            throw new NotFoundException("Пользователь с ID " + userId + " ,который хочет поставить лайк, не существует");
+            log.error("Пользователь с ID {} не существует, не может поставить лайк", userId);
+            throw new NotFoundException("Пользователь с ID " + userId + " не существует");
         }
 
-        if (!filmForLikeAdd.getUserLikes().add(userId)) {
+        boolean isAdded = film.getUserLikes().add(userId);
+        if (!isAdded) {
             log.warn("Пользователь {} уже поставил лайк фильму {}", userId, filmId);
-            throw new ValidationException("Пользователь может поставить только один раз лайк фильму");
+            throw new ValidationException("Пользователь может поставить только один лайк фильму");
         }
-
-        filmForLikeAdd.setLikes(filmForLikeAdd.getLikes() + 1);
-
-        filmStorage.update(filmForLikeAdd);
 
         log.info("Пользователь {} успешно поставил лайк фильму {}", userId, filmId);
 
-        return filmForLikeAdd.getUserLikes();
+        return film.getUserLikes();
     }
 
     @Override
     public Set<Long> deleteLike(@NotNull Long filmId, @NotNull Long userId) {
         log.debug("Удаление лайка пользователем {} к фильму {}", userId, filmId);
 
-        Optional<Film> filmOptional = filmStorage.findById(filmId);
-        if (filmOptional.isEmpty()) {
-            log.warn("Фильм с ID {} не существует", filmId);
-            throw new NotFoundException("Фильм с ID " + filmId + " не существует");
+        Film film = filmStorage.findById(filmId)
+                .orElseThrow(() -> {
+                    log.warn("Фильм с ID {} не существует", filmId);
+                    return new NotFoundException("Фильм с ID " + filmId + " не существует");
+                });
+
+        if (userStorage.findById(userId) == null) {
+            log.error("Пользователь с ID {} не существует", userId);
+            throw new NotFoundException("Пользователь с ID " + userId + " не существует");
         }
 
-        Film filmForLikeDelete = filmOptional.get();
-
-        if (userStorage.findById(userId) == null || !filmForLikeDelete.getUserLikes().remove(userId)) {
-            log.error("Пользователь с ID {}, который удаляет лайк, не существует", userId);
-            throw new NotFoundException("Пользователь с ID " + userId + " ,который хочет удалить лайк, не существует");
+        boolean isRemoved = film.getUserLikes().remove(userId);
+        if (!isRemoved) {
+            log.warn("Пользователь {} не ставил лайк фильму {}", userId, filmId);
+            throw new ValidationException("Пользователь не ставил лайк фильму");
         }
 
-        filmForLikeDelete.setLikes(filmForLikeDelete.getLikes() - 1);
-        filmStorage.update(filmForLikeDelete);
-
+        filmStorage.update(film);
         log.debug("Пользователь {} успешно удалил лайк у фильма {}", userId, filmId);
-        return filmForLikeDelete.getUserLikes();
+
+        return film.getUserLikes();
     }
 
     @Override
@@ -90,9 +88,25 @@ public class InMemoryLikeStorage implements LikeStorage {
         List<Film> films = filmStorage.getAllFilms();
         log.debug("Список фильмов для сортировки {}", films);
 
-        return films.stream()
-                .sorted(Comparator.comparingInt(Film::getLikes).reversed())
-                .limit(count)
-                .toList();
+        List<Film> topFilms = new ArrayList<>();
+
+        int topCount;
+        if (count != null && count > 0) {
+            topCount = Math.min(count, films.size());
+        } else {
+            topCount = Math.min(10, films.size());
+        }
+
+        films.sort(new Comparator<Film>() {
+            @Override
+            public int compare(Film f1, Film f2) {
+                return Integer.compare(f2.getUserLikes().size(), f1.getUserLikes().size());
+            }
+        });
+
+        for (int i = 0; i < topCount; i++) {
+            topFilms.add(films.get(i));
+        }
+        return topFilms;
     }
 }

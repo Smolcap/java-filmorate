@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -21,7 +20,7 @@ public class UpdateFilmRequest {
     LocalDate releaseDate;
     Long duration;
     Mpa mpa;
-    List<Genre> genres;
+    Set<Genre> genres;
 
     @Builder.Default
     Set<Long> userLikes = new HashSet<>();
