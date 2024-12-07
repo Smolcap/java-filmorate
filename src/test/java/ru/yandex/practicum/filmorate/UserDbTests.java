@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.dao.UserDbStorage;
 import ru.yandex.practicum.filmorate.dao.mapping.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,7 +39,7 @@ public class UserDbTests {
         User user = userStorage.create(User.builder()
                 .name("User1")
                 .email("user1@example.com")
-                .login("testlogin1")
+                .login("testlon1")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build());
 
@@ -47,7 +47,7 @@ public class UserDbTests {
 
         assertThat(user.getName()).isEqualTo("User1");
         assertThat(user.getEmail()).isEqualTo("user1@example.com");
-        assertThat(user.getLogin()).isEqualTo("testlogin1");
+        assertThat(user.getLogin()).isEqualTo("testlon1");
         assertThat(user.getBirthday()).isEqualTo(LocalDate.of(1990, 1, 1));
 
         assertThat(user.getId()).isNotNull();
@@ -177,6 +177,8 @@ public class UserDbTests {
 
         Set<Long> addFriend = userStorage.addFriends(user1.getId(), user2.getId());
         assertThat(addFriend).isNotNull();
+        Set<Long> addFriend2 = userStorage.addFriends(user2.getId(), user1.getId());
+        assertThat(addFriend2).isNotNull();
 
         Set<Long> deleteFriend = userStorage.deleteFromFriends(user1.getId(), user2.getId());
 

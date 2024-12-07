@@ -4,11 +4,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.Like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.RatingDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.RatingStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 @Configuration
@@ -37,5 +39,11 @@ public class AppConfig {
     @Primary
     public UserStorage userDbStorage(UserDbStorage userDbStorage) {
         return userDbStorage;
+    }
+
+    @Bean(name = "ratingDbStorageBean")
+    @Primary
+    public RatingStorage ratingDbStorage(RatingDbStorage ratingDbStorage) {
+        return ratingDbStorage;
     }
 }
