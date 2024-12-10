@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
@@ -22,28 +25,29 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> topFilms(@RequestParam(defaultValue = "10") Integer count) {
+    public List<FilmDto> topFilms(@RequestParam(defaultValue = "1000") Integer count) {
         return likeService.top10PopularMovies(count);
     }
 
     @GetMapping
-    public List<Film> allListFilm() {
+    public List<FilmDto> allListFilm() {
         return filmService.getAllFilms();
     }
 
     @GetMapping("/{filmId}")
-    public Film findById(@PathVariable Long filmId) {
+    @ResponseStatus(HttpStatus.OK)
+    public FilmDto findById(@PathVariable("filmId") Long filmId) {
         return filmService.findById(filmId);
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        return filmService.createFilm(film);
+    public FilmDto create(@Valid @RequestBody NewFilmRequest filmRequest) {
+        return filmService.createFilm(filmRequest);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        return filmService.updateFilm(newFilm);
+    public FilmDto update(@Valid @RequestBody UpdateFilmRequest updateFilmRequest) {
+        return filmService.updateFilm(updateFilmRequest);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

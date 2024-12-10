@@ -53,21 +53,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findById(Long filmId) {
+    public Optional<Film> findById(Long filmId) {
         Film film = films.get(filmId);
-
-        if (film == null) {
-            throw new NotFoundException("Фильм с ID " + filmId + " не найден");
-        }
-        return film;
+        return Optional.ofNullable(film);
     }
 
     @Override
-    public void deleteFilmById(Long filmId) {
+    public boolean deleteFilmById(Long filmId) {
         Film removeFilm = films.get(filmId);
         if (removeFilm != null) {
             films.remove(filmId);
             log.info("Фильм с ID {} успешно удалён", filmId);
+            return true;
         } else {
             log.error("Фильм с ID {} для удаления не найден", filmId);
             throw new NotFoundException("Пользователь для удаления с ID " + filmId + " не найден");
